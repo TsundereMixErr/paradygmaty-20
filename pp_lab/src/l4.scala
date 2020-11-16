@@ -3,6 +3,21 @@ object l4 {
   case object Empty extends BT[Nothing]
   case class Node[+A](elem:A, left:BT[A], right:BT[A]) extends BT[A]
 
+  def printBT[A](tree: BT[A]): Unit = {
+    def innerPrintBT(tree: BT[A], depth: Int): Unit =
+      tree match {
+        case Node(value, leftNode, rightNode) =>
+          innerPrintBT(rightNode, depth+1)
+          for (i <- 0 to depth-1) print("...")
+          print(value + "\n")
+          innerPrintBT(leftNode, depth+1)
+        case Empty =>
+          for (i <- 0 to depth-1) print("...")
+          print("||\n")
+      }
+    innerPrintBT(tree, 0)
+  }
+
   //ZADANIE 1 (3pkt)
   def createTree(depth: Int, from: Int, to: Int): BT[Int] = {
     val r = scala.util.Random
@@ -13,45 +28,17 @@ object l4 {
   }
 
   //ZADANIE 2 (3pkt)
-  def preOrder[A](tree: BT[A]): List[A] =
-    tree match {
-      case Empty => Nil
-      case Node(value, leftNode, rightNode) => value :: preOrder(leftNode) ::: preOrder(rightNode)
+  def subtract(tree1: BT[Int], tree2: BT[Int]): BT[Int] =
+    (tree1, tree2) match {
+      case (Node(value1, leftNode1, rightNode1), Node(value2, leftNode2, rightNode2)) =>
+        Node(value1 - value2, subtract(leftNode1, leftNode2), subtract(rightNode1, rightNode2))
+      case _ => Empty
     }
 
-  def toTree[A](xs: List[A]): BT[A] =
-    xs match {
-      case Nil => Empty
-      //case
-    }
-
-  def test: List[Int] =
-    preOrder(tst)
-
-  /*def subtract(tree1: BT[Int], tree2: BT[Int]): BT[Int] = {
-    def subtractLists(xs1: List[Int], xs2: List[Int]): List[Int] =
-      xs1 match {
-        case Nil => Nil
-        case h :: t => h-xs2.head :: subtractLists(t, xs2.tail)
-      }
-  }*/
-
-  val tst = Node(0, Node(1, Node(2, Empty, Empty), Node(3, Empty, Empty)), Node(4, Node(5, Empty, Empty), Node(6, Empty, Empty)))
-
-  def treeToString[A](tree: BT[A]): String = {
-    tree match {
-      case Empty => "\n"
-      case Node(value, left, right) => treeToString(left) + " " + value + " " + treeToString(right)
-    }
-  }
-
-  def a: String =
-    inOrder(tst)
-
-  def inOrder[A](tree: BT[A]): String =
+  def preOrder[A](tree: BT[A]): String =
     tree match {
       case Empty => ""
-      case Node(value, leftNode, rightNode) => inOrder(leftNode) + " " + value + " " + inOrder(rightNode)
+      case Node(value, leftNode, rightNode) => value + " " + preOrder(leftNode) + " " + preOrder(rightNode)
     }
 
 
@@ -86,62 +73,5 @@ object l4 {
       case ('/', h1 #:: t1, h2 #:: t2) => (h1 / h2) #:: ldzialanie(t1, t2, '/')
       case _ => throw new Exception("Undefined arithmetic operation")
     }
-
-  /*def aaa[A](tree: BT[A]): String = {
-    var s: String = "a"
-    def helper(node: BT[A], space: Int): String = {
-      node match {
-        case Empty => s + ""
-        case Node(value, leftNode, rightNode) =>
-          s + helper(rightNode, space + 10) + "\n"
-          for (i <- 10 until space) {s + " "}
-          + value + "\n"
-          helper(leftNode, space)
-      }
-      s
-    }
-    helper(tree, 0)
-    s
-  }*/
-
-  /*def print2DUtil(root: Nothing, space: Int): Unit = { // Base case
-    if (root == null) return
-    // Increase distance between levels
-    space += COUNT
-    // Process right child first
-    print2DUtil(root.right, space)
-    // Print current node after space
-    // count
-    System.out.print("\n")
-    for (i <- COUNT until space) {
-      System.out.print(" ")
-    }
-    System.out.print(root.data + "\n")
-    // Process left child
-    print2DUtil(root.left, space)
-  }*/
-
-  // Wrapper over print2DUtil()
-  //def print2D(root: Nothing): Unit = { // Pass initial space count as 0
-   // print2DUtil(root, 0)
-  //}
-
-
-  /*def printTree[A](tree: BT[A]): Unit = {
-    var space = 10
-    def printRec(tree: BT[A], spac: Int) = {
-      space += 10
-      tree match {
-        case Node(value, leftNode, rightNode) =>
-      }
-    }
-  }*/
-
-  /*def eachNElement[A](lxs: LazyList[A], n: Int, m: Int): LazyList[A] = {
-    def helper(lxs: LazyList[A], n: Int, m: Int, currentList: LazyList[A]): LazyList[A] =
-      (n, m) match {
-        case (n, m) =>
-      }
-  }*/
 
 }

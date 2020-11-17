@@ -60,18 +60,26 @@ object l4 {
   //Gdy wejściowe listy mają różną liczbę elementów: przy + oraz - brakujący element uznaje się za 0
   //Przy * brakujący element uznaje się za 1
   //Przy dzieleniu: x/Nil = x oraz Nil/x = 0
-  def ldzialanie(xs1: LazyList[Double], xs2: LazyList[Double], operator: Char): LazyList[Double] =
+  def ldzialanie2(xs1: LazyList[Double], xs2: LazyList[Double], operator: Char): LazyList[Double] =
     (operator, xs1, xs2) match {
       case ('+'|'-'|'*'|'/', LazyList(), LazyList()) => LazyList()
       case ('+'|'-'|'*'|'/', list, LazyList()) => list
       case ('+'|'*', LazyList(), list) => list
-      case ('-', LazyList(), h #:: t) => -h #:: ldzialanie(LazyList(), t, '-')
-      case ('/', LazyList(), _ #:: t) => 0 #:: ldzialanie(LazyList(), t, '/')
-      case ('+', h1 #:: t1, h2 #:: t2) => (h1 + h2) #:: ldzialanie(t1, t2, '+')
-      case ('-', h1 #:: t1, h2 #:: t2) => (h1 - h2) #:: ldzialanie(t1, t2, '-')
-      case ('*', h1 #:: t1, h2 #:: t2) => (h1 * h2) #:: ldzialanie(t1, t2, '*')
-      case ('/', h1 #:: t1, h2 #:: t2) => (h1 / h2) #:: ldzialanie(t1, t2, '/')
+      case ('-', LazyList(), h #:: t) => -h #:: ldzialanie2(LazyList(), t, '-')
+      case ('/', LazyList(), _ #:: t) => 0 #:: ldzialanie2(LazyList(), t, '/')
+      case ('+', h1 #:: t1, h2 #:: t2) => (h1 + h2) #:: ldzialanie2(t1, t2, '+')
+      case ('-', h1 #:: t1, h2 #:: t2) => (h1 - h2) #:: ldzialanie2(t1, t2, '-')
+      case ('*', h1 #:: t1, h2 #:: t2) => (h1 * h2) #:: ldzialanie2(t1, t2, '*')
+      case ('/', h1 #:: t1, h2 #:: t2) => (h1 / h2) #:: ldzialanie2(t1, t2, '/')
       case _ => throw new Exception("Undefined arithmetic operation")
+    }
+
+  //wersja z funkcja zamiast chara jako operator
+  def ldzialanie(xs1: LazyList[Double], xs2: LazyList[Double], operator: (Double, Double) => Double): LazyList[Double] =
+    (xs1, xs2) match {
+      case (LazyList(), _) => xs2
+      case (_, LazyList()) => xs1
+      case (h1 #:: t1, h2 #:: t2) => operator(h1, h2) #:: ldzialanie(t1, t2, operator)
     }
 
 }

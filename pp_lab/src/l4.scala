@@ -3,16 +3,17 @@ object l4 {
   case object Empty extends BT[Nothing]
   case class Node[+A](elem:A, left:BT[A], right:BT[A]) extends BT[A]
 
+  //Funkcja pomocnicza wyswietlajaca drzewa
   def printBT[A](tree: BT[A]): Unit = {
     def innerPrintBT(tree: BT[A], depth: Int): Unit =
       tree match {
         case Node(value, leftNode, rightNode) =>
           innerPrintBT(rightNode, depth+1)
-          for (i <- 0 to depth-1) print("...")
+          for (i <- 0 until depth-1) print("...")
           print(value + "\n")
           innerPrintBT(leftNode, depth+1)
         case Empty =>
-          for (i <- 0 to depth-1) print("...")
+          for (i <- 0 until depth-1) print("...")
           print("||\n")
       }
     innerPrintBT(tree, 0)
@@ -40,6 +41,19 @@ object l4 {
       case Empty => ""
       case Node(value, leftNode, rightNode) => value + " " + preOrder(leftNode) + " " + preOrder(rightNode)
     }
+
+  //ZADANIE 3 (4pkt)
+  def removeDuplicatesDFS(tree1: BT[Int], tree2: BT[Int]): (BT[Int], BT[Int]) = {
+    (tree1, tree2) match {
+      case (Empty, Empty) => (Empty, Empty)
+      case (Node(value1, leftNode1, rightNode1), Node(value2, leftNode2, rightNode2)) =>
+        val leftSubtree = removeDuplicatesDFS(leftNode1, leftNode2)
+        val rightSubtree = removeDuplicatesDFS(rightNode1, rightNode2)
+        if(value1 == value2 && leftSubtree._1 == Empty && rightSubtree._1 == Empty) (Empty, Empty)
+        else if(value1 == value2) (Node(-1, leftSubtree._1, rightSubtree._1), Node(-1, rightSubtree._2, rightSubtree._2))
+        else (Node(value1, leftSubtree._1, rightSubtree._1), Node(value2, leftSubtree._2, rightSubtree._2))
+    }
+  }
 
 
   //ZADANIE 4 (5 pkt)
@@ -74,7 +88,7 @@ object l4 {
       case _ => throw new Exception("Undefined arithmetic operation")
     }
 
-  //wersja z funkcja zamiast chara jako operator
+  //Wersja z funkcja zamiast chara jako operator
   def ldzialanie(xs1: LazyList[Double], xs2: LazyList[Double], operator: (Double, Double) => Double): LazyList[Double] =
     (xs1, xs2) match {
       case (LazyList(), _) => xs2
